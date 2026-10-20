@@ -1,0 +1,25 @@
+
+# Private n8n exports
+jayex-customer-support-workflow.json
+workflows/*-private.json
+
+# Local webhook configuration and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets.json
+
+# Raw customer and evaluation data
+actual-results.csv
+expected-results.csv
+
+# Local editor and OS files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Temporary files and logs
+*.log
+*.tmp
