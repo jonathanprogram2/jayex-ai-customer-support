@@ -1,3 +1,4 @@
+
 # JayEx AI Customer Support Automation
 
 An AI-powered customer support workflow that classifies incoming inquiries, generates response drafts, escalates sensitive requests for human review, and records interactions for tracking and evaluation.
@@ -14,6 +15,29 @@ The system accepts customer inquiries through an authenticated webhook, uses an 
 
 **This is a portfolio demonstration using fictional customer information and a demo business. It has not been deployed for a paying client.**
 
+## Workflow Screenshots
+
+### Main Customer Support Workflow
+
+![Main n8n customer support workflow](<img width="1238" height="659" alt="main-workflow" src="https://github.com/user-attachments/assets/b5817390-c273-49e8-960a-7006c548207c" />
+)
+
+The primary workflow validates authenticated requests, classifies inquiries, drafts responses for eligible messages, and routes sensitive cases to a human reviewer. [View the public workflow JSON](workflows/jayex-customer-support-public.json).
+
+### Error Handler
+
+![n8n error handler workflow](docs/images/error-handler.png)
+
+A separate Error Trigger workflow captures execution failures and sends a Gmail alert with workflow, node, error, and execution details. [View the error handler JSON](workflows/jayex-error-handler.json).
+
+### Controlled Error Simulation
+
+![n8n controlled error simulation workflow](docs/images/error-simulation.png)
+
+An authenticated webhook invokes a Stop And Error node to verify that the error handler fires as expected. [View the simulation JSON](workflows/jayex-error-simulation.json).
+
+*Screenshots show the n8n editor; the published JSON exports have credentials and deployment-specific references removed.*
+
 ## Key Features
 
 - **AI Classification:** Categorizes incoming messages as general information, appointments, billing, or other.
@@ -29,16 +53,16 @@ The system accepts customer inquiries through an authenticated webhook, uses an 
 
 ## Technology Stack
 
-| Technology           | Purpose                                                 |
-| -------------------- | ------------------------------------------------------- |
-| n8n                  | Workflow orchestration                                  |
-| OpenAI GPT-4o-mini   | Inquiry classification and response generation          |
-| JavaScript           | Input validation, parsing, and workflow data processing |
-| REST APIs / Webhooks | Receiving external customer inquiries                   |
-| Google Sheets        | Logging inquiries and AI outputs                        |
-| Gmail                | Human-review notifications                              |
-| PowerShell           | Automated API tests and AI evaluation                   |
-| CSV                  | Test results and evaluation reports                     |
+| Technology | Purpose |
+| ---------- | ------- |
+| n8n | Workflow orchestration |
+| OpenAI GPT-4o-mini | Inquiry classification and response generation |
+| JavaScript | Input validation, parsing, and workflow data processing |
+| REST APIs / Webhooks | Receiving external customer inquiries |
+| Google Sheets | Logging inquiries and AI outputs |
+| Gmail | Human-review notifications |
+| PowerShell | Automated API tests and AI evaluation |
+| CSV | Test results and evaluation reports |
 
 ## System Architecture
 
@@ -70,12 +94,12 @@ A separate n8n error-handling workflow monitors execution failures and sends not
 
 The AI classifies inquiries into four categories:
 
-| Category            | Example                        |
-| ------------------- | ------------------------------ |
-| general_information | What are your business hours?  |
-| appointment         | Can I schedule an appointment? |
-| billing             | I was charged twice.           |
-| other               | I need help with an issue.     |
+| Category | Example |
+| -------- | ------- |
+| general_information | What are your business hours? |
+| appointment | Can I schedule an appointment? |
+| billing | I was charged twice. |
+| other | I need help with an issue. |
 
 The JavaScript validation node checks whether the AI returns the expected JSON structure.
 
@@ -146,18 +170,18 @@ Testing covers:
 
 ### Evaluation Results
 
-| Metric                                 | Observed result        |
-| -------------------------------------- | ---------------------- |
-| API validation tests                   | 3/3 passed             |
-| AI classification and escalation tests | 6/6 passed             |
-| AI evaluation pass rate                | 100% on six test cases |
-| Error notification simulation          | Passed                 |
+| Metric | Observed result |
+| ------ | --------------- |
+| API validation tests | 3/3 passed |
+| AI classification and escalation tests | 6/6 passed |
+| AI evaluation pass rate | 100% on six test cases |
+| Error notification simulation | Passed |
 
 The six AI evaluation scenarios measured category classification and human-review routing. These results do not establish production-wide AI accuracy or general prompt-injection resistance.
 
 Each evaluation request includes a unique test ID that links expected outcomes to the actual Google Sheets results.
 
-The scoring script compares the expected category and human-review decision against the recorded outputs, then generates an evaluation report.
+The scoring script compares the expected category and human-review decision against the recorded outputs, then generates an [evaluation report](evaluation-report.csv).
 
 ## Error Monitoring
 
@@ -178,14 +202,22 @@ The error handler provides monitoring and notification; it does not currently im
 5. Configure both Google Sheets nodes with your document and worksheet.
 6. Connect your Gmail credential and replace the demo review email.
 7. Configure your own business information in the AI Response Generator.
-8. Optionally create and attach a separate error-monitoring workflow.
-9. Test the workflow before publishing.
+8. Import `workflows/jayex-error-handler.json` and configure its Gmail credential and recipient address.
+9. Import `workflows/jayex-error-simulation.json` if you want to reproduce the failure test; configure its Header Authentication credential.
+10. In the main workflow settings (and simulation workflow settings if testing), select your imported Error Handler as the error workflow.
+11. Test the workflows before publishing. Keep the simulation disabled except during controlled tests.
 
 The public workflow intentionally excludes private credentials, spreadsheet identifiers, and deployment-specific settings.
 
 ## Running the Tests
 
-The test scripts are designed for PowerShell 7.
+The test scripts are designed for PowerShell 7. Set the webhook URL for your own instance in the current PowerShell session; `.env.example` documents the required variable but is not automatically loaded.
+
+```powershell
+$env:JAYEX_WEBHOOK_URL = "https://your-instance.app.n8n.cloud/webhook/customer-support"
+```
+
+Run the API validation tests:
 
 ```powershell
 pwsh -NoProfile -File .\test-webhook.ps1
@@ -197,7 +229,7 @@ Run the AI evaluation submissions:
 pwsh -NoProfile -File .\test-ai-evaluation.ps1
 ```
 
-The scripts must be configured with your own webhook URL and authentication key.
+The scripts prompt for a Header Authentication API key when run. Do not commit real keys or customer data.
 
 Export the Google Sheets results as `actual-results.csv`, then generate an evaluation report:
 
