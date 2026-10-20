@@ -16,10 +16,13 @@ actual-results.csv
 expected-results.csv
 
 # Local editor and OS files
-.vscode/
 .DS_Store
 Thumbs.db
 
 # Temporary files and logs
 *.log
 *.tmp
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
