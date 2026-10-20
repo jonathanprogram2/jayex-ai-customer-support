@@ -1,0 +1,49 @@
+{
+  "name": "JayEx - AI Automation Error Handler",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "id": "feabb51a-f1b2-4130-bcc6-66be54c84cfa",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "sendTo": "reviewer@example.com",
+        "subject": "={{ \"AI AUTOMATION FAILURE: \" + ($json.workflow?.name || \"Unknown Workflow\") }}",
+        "emailType": "text",
+        "message": "={{ \n\"JAYEX AI AUTOMATION - ERROR ALERT\\n\\n\" +\n\"Workflow: \" + ($json.workflow?.name || \"Unknown\") + \"\\n\" +\n\"Failed Node: \" + ($json.execution?.lastNodeExecuted || \"Unknown\") + \"\\n\" +\n\"Error: \" + (\n  $json.execution?.error?.message ||\n  $json.trigger?.error?.message ||\n  \"No error details available\"\n) + \"\\n\" +\n  \"Execution ID: \" + ($json.execution?.id || \"Unavailable\") + \"\\n\" +\n  \"Execution URL: \" + ($json.execution?.url || \"Unavailable\") + \"\\n\\n\" +\n  \"Please investigate this failed execution.\"\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [224, 0],
+      "id": "7a2efa42-5e03-4b83-aa43-ebe80efe127b",
+      "name": "Notify Automation Failure",
+      "credentials": {}
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Notify Automation Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}
