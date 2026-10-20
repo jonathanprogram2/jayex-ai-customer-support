@@ -19,8 +19,7 @@ The system accepts customer inquiries through an authenticated webhook, uses an 
 
 ### Main Customer Support Workflow
 
-![Main n8n customer support workflow](<img width="1238" height="659" alt="main-workflow" src="https://github.com/user-attachments/assets/b5817390-c273-49e8-960a-7006c548207c" />
-)
+![Main n8n customer support workflow](docs/images/main-workflow.png)
 
 The primary workflow validates authenticated requests, classifies inquiries, drafts responses for eligible messages, and routes sensitive cases to a human reviewer. [View the public workflow JSON](workflows/jayex-customer-support-public.json).
 
